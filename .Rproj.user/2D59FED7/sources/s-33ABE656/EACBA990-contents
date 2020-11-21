@@ -1,0 +1,12 @@
+library(tidyverse)
+
+g <- ggplot() 
+
+y <- 1
+
+for (c in colours()) {
+  g <- g + geom_hline(yintercept = y, colour = c)
+  y <- y + 1
+}
+
+g

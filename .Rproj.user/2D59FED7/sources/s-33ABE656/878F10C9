@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1605960303063.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "878F10C9",
+    "lastKnownWriteTime" : 1587154904,
+    "last_content_update" : 1587154904,
+    "path" : "~/not_codeclan/data_and_coding/davidfun/fun_learning_app/colours_text.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "25,8",
+        "scrollLine" : "7"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
