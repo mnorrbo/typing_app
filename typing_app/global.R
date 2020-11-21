@@ -4,7 +4,11 @@ library(OpenRepGrid) # for typing examples before we find code
 library(shinyWidgets)
 
 code_place <- 1
-code_chunks <-  randomSentences(100, 5)
+code_chunks <-  c(
+  'library(ggplot2)\nggplot(mpg, aes(displ, hwy, colour = class)) +\ngeom_point()',
+  'ggplot(faithfuld, aes(waiting, eruptions)) +\ngeom_raster(aes(fill = density))',
+  'install.packages("tidyverse")'
+)
 
 returnColouredText <- function(user_input, user_split, 
                                example_code, example_split, 

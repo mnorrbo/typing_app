@@ -6,9 +6,16 @@ server <- function(input, output, session){
         str_split(code_chunks[code_place], "") %>% flatten_chr()
     })
     
-    user_split <- reactive(str_split(input$user_typing, "") %>% flatten_chr())
+    user_split <- eventReactive(input$user_typing, {
+        str_split(input$user_typing, "") %>% flatten_chr()
+    })
     
-    observeEvent(input$user_typing, {
+    # output$results = renderPrint({
+    #     input$mydata
+    # })
+    # 
+    
+    observe({
         if (length(user_split()) >= length(code_split())) {
             
             code_place <<- sample(1:length(code_chunks), 1)
@@ -23,43 +30,22 @@ server <- function(input, output, session){
         }
     })
     
-    
-    
-    example_coloured <- eventReactive(input$user_typing, {
-        
-            returnColouredText(user_input = input$user_typing,
-                               user_split = user_split(),
-                               example_code = code_chunks[code_place],
-                               example_split = code_split())
-        
-    })
+    # example_coloured <- reactive({
+    #     autoInvalidate()
+    #     returnColouredText(user_input = input$user_typing,
+    #                        user_split = user_split(),
+    #                        example_code = code_chunks[code_place],
+    #                        example_split = code_split())
+    #     
+    # })
     
     output$example_code <- renderText({
-        example_coloured()
+        returnColouredText(user_input = input$user_typing,
+                           user_split = user_split(),
+                           example_code = code_chunks[code_place],
+                           example_split = code_split())
     })
-    
-    
-    
-    
-    # output$example_code <- renderText({
-    #     
-    #     if (input$user_typing == ""){
-    #         return(code_chunk)}
-    #     
-    #     else if (all(user_split() == code_split[1:length(user_split())])){
-    #         
-    #         return(paste0('<span style=\"color:green\">', str_sub(code_chunk, 1, length(user_split())), '</span>', 
-    #                       str_sub(code_chunk, length(user_split())+ 1)))}
-    #         
-    #     
-    #     else {
-    #         return(paste0('<span style=\"color:red\">', str_sub(code_chunk, 1, length(user_split())), '</span>', 
-    #                       str_sub(code_chunk, length(user_split())+ 1)))
-    #     }
-    #     
-    #     })
-    #     
-    }
+}
     
 # 
 # string_1 <- "this is my first string"

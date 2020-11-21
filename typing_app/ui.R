@@ -18,6 +18,14 @@ ui <- fluidPage(
         "example_code",
         container = pre
     ),
+    
+    # htmlOutput("results"),
+    
+  #   tags$script('
+  #   $(document).on("shiny:idle", function (e) {
+  #      Shiny.onInputChange("mydata", Math.random());
+  #   });
+  # '),
 
     br(),
 
