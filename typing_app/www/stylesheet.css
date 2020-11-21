@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Patrick+Hand&display=swap');
+
+h1 {
+  font-family: 'Fredoka One', cursive;
+  color: #80A4ED;
+  font-size: 50px;
+}
+
+
+.shiny-html-output {
+  background-color: #E6E1C5;
+  border-color: #D4CB92;
+  width: 500px;
+  font-size: 20px;
+}
+
+.pre {
+  color: #395C6B;
+}
+
+.well {
+  background-color: #b0d6d4;
+  border-color: #99c4c1;
+  
+}
+
+.control-label {
+  font-family: 'Patrick Hand', cursive;
+  color: #80A4ED;
+  font-size: 17px;
+}
+
+.selectpicker {
+  color: #356360
+}
+
+img {
+  width: 150px;
+  height: 150px;
+}
+
+#update {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 20px;
+  color: #ffffff;
+  background-color: #000000;
+  border-color: #000000;
+}
