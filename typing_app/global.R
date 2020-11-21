@@ -1,12 +1,15 @@
 library(shiny)
 library(tidyverse)
 library(OpenRepGrid) # for typing examples before we find code
+library(shinyWidgets)
 
-code_chunks <-  randomSentences(100, 10)
+code_chunks <-  randomSentences(100, 5)
 
 code_place <- 1
 
-returnColouredText <- function(user_input, user_split, example_code, example_split, colors = c("red", "green")) {
+returnColouredText <- function(user_input, user_split, 
+                               example_code, example_split, 
+                               colors = c(red = "#edb6af", green = "#afedbd")) {
   
   if (user_input == "") {
     
