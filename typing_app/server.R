@@ -1,43 +1,41 @@
-code_chunk <-  "normal text on one line"
-code_split <- str_split(code_chunk, "") %>% flatten_chr()
+source("global.R")
 
-colors <- c("red", "green")
-
-
-server <- function(input, output){
+server <- function(input, output, session){
+    
+    code_split <- eventReactive(input$user_typing, {
+        str_split(code_chunks[code_place], "") %>% flatten_chr()
+    })
     
     user_split <- reactive(str_split(input$user_typing, "") %>% flatten_chr())
     
-    output$example_code <- renderText({
-        
-        if (input$user_typing == "") {
+    observeEvent(input$user_typing, {
+        if (length(user_split()) >= length(code_split())) {
             
-            return(code_chunk)
+            code_place <<- sample(1:length(code_chunks), 1)
             
-        } else {
-            
-            true_false <- code_split[1:length(user_split())] == user_split()
-            
-            colors_for_spans <- vector()
-            
-            for (i in 1:length(user_split())) {
-                colors_for_spans[i] <- colors[as.numeric(true_false[i])+1]
-            }
-            
-            part_1 <- paste0(
-                '<span style = \"background-color:', colors_for_spans, '\">', code_split[1:length(user_split())], '</span>',
-                collapse = ""
-            )
-            
-            part_2 <- paste0(
-                code_split[(length(user_split())+1):length(code_split)], collapse = ""
-            )
-            
-            paste0(part_1, part_2, collapse = "")
+            updateTextAreaInput(
+                session,
+                "user_typing",
+                "Type the code above",
+                value = "",
+                placeholder = "Start typing here")
             
         }
+    })
+    
+    
+    
+    example_coloured <- eventReactive(input$user_typing, {
         
+            returnColouredText(user_input = input$user_typing,
+                               user_split = user_split(),
+                               example_code = code_chunks[code_place],
+                               example_split = code_split())
         
+    })
+    
+    output$example_code <- renderText({
+        example_coloured()
     })
     
     

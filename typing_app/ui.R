@@ -1,6 +1,3 @@
-library(shiny)
-library(tidyverse)
-
 ui <- fluidPage(
     
     h1("Typing Speed Test"),
@@ -14,7 +11,7 @@ ui <- fluidPage(
     
     br(),
     
-    textInput(
+    textAreaInput(
         "user_typing",
         "Type the code above",
         value = "",
