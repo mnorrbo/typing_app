@@ -3,15 +3,14 @@ library(tidyverse)
 library(OpenRepGrid) # for typing examples before we find code
 library(shinyWidgets)
 
-code_chunks <-  randomSentences(100, 5)
-
 code_place <- 1
+code_chunks <-  randomSentences(100, 5)
 
 returnColouredText <- function(user_input, user_split, 
                                example_code, example_split, 
                                colors = c(red = "#edb6af", green = "#afedbd")) {
-  
-  if (user_input == "") {
+
+  if (user_input == "" | length(user_split) > length(example_split)) {
     
     return(example_code)
     
@@ -34,7 +33,11 @@ returnColouredText <- function(user_input, user_split,
       example_split[(length(user_split)+1):length(example_split)], collapse = ""
     )
     
-    paste0(part_1, part_2, collapse = "")
+    if (str_detect(part_2, "NA")) {
+      paste0(example_code)
+    } else {
+      paste0(part_1, part_2, collapse = "")
+    }
     
   }
   
