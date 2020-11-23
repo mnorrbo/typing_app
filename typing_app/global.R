@@ -1,46 +1,166 @@
 library(shiny)
 library(tidyverse)
-library(OpenRepGrid) # for typing examples before we find code
 library(shinyWidgets)
+library(OpenRepGrid) # for english examples
+library(pdftools)
 
-code_place <- 1
-code_chunks <-  c(
-  'library(ggplot2)\nggplot(mpg, aes(displ, hwy, colour = class)) +\ngeom_point()',
-  'ggplot(faithfuld, aes(waiting, eruptions)) +\ngeom_raster(aes(fill = density))',
-  'install.packages("tidyverse")'
+# URLs of documentation pdfs
+URLs <- c(
+  ggplot2 = "https://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf",
+  dplyr = "https://cran.r-project.org/web/packages/dplyr/dplyr.pdf",
+  tidyr = "https://cran.r-project.org/web/packages/tidyr/tidyr.pdf",
+  readr = "https://cran.r-project.org/web/packages/readr/readr.pdf",
+  purrr = "https://cran.r-project.org/web/packages/purrr/purrr.pdf",
+  tibble = "https://cran.r-project.org/web/packages/tibble/tibble.pdf",
+  stringr = "https://cran.r-project.org/web/packages/stringr/stringr.pdf",
+  forcats = "https://cran.r-project.org/web/packages/forcats/forcats.pdf"
 )
 
-returnColouredText <- function(user_input, user_split, 
-                               example_code, example_split, 
-                               colors = c(red = "#edb6af", green = "#afedbd")) {
-
-  if (user_input == "" | length(user_split) > length(example_split)) {
+# Function to extract examples
+get_examples <- function(URL, limit = 7, include_comments = FALSE) {
+  
+  ggplot2_text <- pdf_text(pdf = URL)
+  
+  ggplot2_lines <- read_lines(ggplot2_text)
+  
+  eg_locations <- str_detect(ggplot2_lines, "Examples")
+  eg_indexes <- which(eg_locations)
+  
+  desc_locations <- str_detect(ggplot2_lines, "Description")
+  desc_indexes <- which(desc_locations)
+  
+  # Finding indexes of 'Description' that follow 'Example'
+  desc_indexes_cor <- vector(length = length(eg_indexes))
+  
+  for (i in 1:length(eg_indexes)) {
     
-    return(example_code)
+    temp <- desc_indexes[desc_indexes > eg_indexes[i]]
     
-  } else { 
+    desc_indexes_cor[i] <- temp[1]
     
-    true_false <- example_split[1:length(user_split)] == user_split
+  }
+  
+  examples <- vector(length = length(eg_indexes))
+  
+  for (i in 1:(length(eg_indexes)-1)) {
     
-    colors_for_spans <- vector()
+    # Extract lines between (and including) the words 
+    # 'Examples' and 'Description'
+    temp <- ggplot2_lines[eg_indexes[i]:desc_indexes_cor[i]]
     
-    for (i in 1:length(user_split)) {
-      colors_for_spans[i] <- colors[as.numeric(true_false[i])+1]
+    # If examples are too long, shorten them
+    if (length(temp) > limit) {
+      temp <- temp[-c((limit+1):length(temp))]
     }
     
-    part_1 <- paste0(
-      '<span style = \"background-color:', colors_for_spans, '\">', example_split[1:length(user_split)], '</span>',
+    if (include_comments == FALSE) {
+      # Find location of the key words and comments (#)
+      temp_remove <- str_detect(temp, "Examples|Description|#")
+    } else {
+      # Find location of the key words
+      temp_remove <- str_detect(temp, "Examples|Description")
+    }
+    
+    # Find location of functions (i.e., where there is code)
+    temp_keep <- str_detect(temp, "[A-z][(]|^[)]|^[}]")
+    
+    # Keep lines that do not contain 'Examples' or 'Description'
+    # and DO contain brackets
+    temp <- temp[!temp_remove & temp_keep]
+    
+    # Turn vector into single character
+    # and add linebreaks instead of four spaces
+    temp <- str_replace_all(paste0(temp, collapse = ""),
+                            "    |   ", "\n")
+    
+    # Remove first linebreak
+    temp <- str_remove(temp, fixed("\n"))
+    
+    # Replace double linebreaks with single linebreaks
+    temp <- str_replace_all(temp, fixed("\n\n"), "\n")
+    
+    # Remove whitespace after \n
+    temp <- str_replace_all(temp, "\\n[ ]+", "\n")
+    
+    # Remove whitespace at start of examples
+    temp <- str_remove_all(temp, pattern = "^ +")
+    
+    # Save example into vector
+    examples[i] <- temp
+    
+  }
+  
+  return(examples)
+  
+}
+
+code_chunks <- unlist(purrr::map(URLs, get_examples))
+
+names(code_chunks) <- NULL
+
+# Define random starting  point for code examples
+code_place <- sample(1:length(code_chunks), 1)
+
+# Function
+returnColouredText <- function(user_input, user_split, 
+                               example_code, example_split, 
+                               colours = c(red = "#edb6af", green = "#afedbd")) {
+
+  if (user_input == "") {
+    # If the user has not typed anything, then display example code as plain text
+    paste0('<div style = "text-align: left;">', 
+           example_code,
+           '</div>')
+    
+  } else { 
+    # if the user has typed something
+    
+    # See if the letters are correct
+    true_false <- example_split[1:length(user_split)] == user_split
+    
+    # create vector to contain highlight colours to show correctness
+    colours_for_spans <- vector()
+    
+    # Fill that vector with either red or green:
+    # colours[1] = red, and colours[2] = green
+    # TRUE = 1 and FALSE = 0
+    # so +1 to true_false vector
+    # correct = 2, incorrect = 1
+    # colours[2] = green, colours[1] = red
+    for (i in 1:length(user_split)) {
+      colours_for_spans[i] <- colours[as.numeric(true_false[i])+1]
+    }
+    
+    # Creating HTML to display letters with highlighting (background-color:)
+    letters_typed <- paste0(
+      '<span style = \"background-color:', 
+      colours_for_spans, '\">', 
+      example_split[1:length(user_split)], 
+      '</span>',
       collapse = ""
     )
     
-    part_2 <- paste0(
-      example_split[(length(user_split)+1):length(example_split)], collapse = ""
-    )
-    
-    if (str_detect(part_2, "NA")) {
-      paste0(example_code)
+    if ((length(user_split)+1) <= length(example_split)) { 
+      # If all user has typed fewer letters than the example contains
+      
+      # find all untyped letters and paste them as plain text (no highlighting) 
+      letters_untyped <- paste0(
+        example_split[(length(user_split)+1):length(example_split)], collapse = ""
+      )
+      
+      # paste typed letters with highlighting followed by untyped letters
+      paste0('<div style = "text-align: left">', 
+             letters_typed, letters_untyped, 
+             '</div>', collapse = "")
+      
     } else {
-      paste0(part_1, part_2, collapse = "")
+      # if user has typed enough letters (including whitespace)
+      
+      # paste only typed letters
+      paste0('<div style = "text-align: left"', 
+             letters_typed, 
+             '</div>', collapse = "")
+      
     }
     
   }
