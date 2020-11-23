@@ -1,25 +1,17 @@
 library(shiny)
+library(shinyjs)
 library(tidyverse)
 library(shinyWidgets)
 library(OpenRepGrid) # for english examples
 library(pdftools)
 
-# URLs of documentation pdfs
-URLs <- c(
-  ggplot2 = "https://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf",
-  dplyr = "https://cran.r-project.org/web/packages/dplyr/dplyr.pdf",
-  tidyr = "https://cran.r-project.org/web/packages/tidyr/tidyr.pdf",
-  readr = "https://cran.r-project.org/web/packages/readr/readr.pdf",
-  purrr = "https://cran.r-project.org/web/packages/purrr/purrr.pdf",
-  tibble = "https://cran.r-project.org/web/packages/tibble/tibble.pdf",
-  stringr = "https://cran.r-project.org/web/packages/stringr/stringr.pdf",
-  forcats = "https://cran.r-project.org/web/packages/forcats/forcats.pdf"
-)
 
 # Function to extract examples
-get_examples <- function(URL, limit = 7, include_comments = FALSE) {
+get_examples <- function(package, limit = 7, include_comments = FALSE) {
   
-  ggplot2_text <- pdf_text(pdf = URL)
+  ggplot2_text <- pdf_text(pdf = paste0("https://cran.r-project.org/web/packages/", 
+                                        package, "/", 
+                                        package, ".pdf"))
   
   ggplot2_lines <- read_lines(ggplot2_text)
   
@@ -69,9 +61,9 @@ get_examples <- function(URL, limit = 7, include_comments = FALSE) {
     temp <- temp[!temp_remove & temp_keep]
     
     # Turn vector into single character
-    # and add linebreaks instead of four spaces
+    # and add linebreaks instead of three/four spaces
     temp <- str_replace_all(paste0(temp, collapse = ""),
-                            "    |   ", "\n")
+                            "    |  ", "\n")
     
     # Remove first linebreak
     temp <- str_remove(temp, fixed("\n"))
@@ -94,12 +86,14 @@ get_examples <- function(URL, limit = 7, include_comments = FALSE) {
   
 }
 
-code_chunks <- unlist(purrr::map(URLs, get_examples))
+# Default code chunks
 
-names(code_chunks) <- NULL
+code_chunks <- function() {
+  return(unlist(purrr:map(c("ggplot2", "dplyr"), get_examples)))
+}
 
-# Define random starting  point for code examples
-code_place <- sample(1:length(code_chunks), 1)
+# Default selection
+code_place <- sample(1:100, 1)
 
 # Function
 returnColouredText <- function(user_input, user_split, 
