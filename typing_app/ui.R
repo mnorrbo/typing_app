@@ -34,12 +34,21 @@ ui <- fluidPage(
         "Type the code above",
         value = "",
         placeholder = "Start typing here"),
+  
+    # textOutput('stateMessage'),
+    # actionButton('timerButton', "Start Challenge!"),
 
     img(src="hand_mascot.gif"),
+  
+    br(),
+  
+    br(),
   
     actionButton("toggleSidebar", "Options"),
     
     br(), 
+  
+    br(),
   
     hidden(div(id ="options",
                style = "background-color: #b0d6d4;
@@ -51,7 +60,7 @@ ui <- fluidPage(
                         margin-left: auto;
                         margin-right: auto;",
                
-               checkboxGroupButtons('packageSelect1',
+               checkboxGroupButtons('packageSelect',
                                     "Packages:",
                                     choices = c("ggplot2",
                                                 "dplyr",
@@ -60,19 +69,13 @@ ui <- fluidPage(
                                     selected = c("ggplot2", "dplyr")
                ),
                
-               checkboxGroupButtons('packageSelect2',
-                                    "",
-                                    choices = c("purrr",
-                                                "tibble",
-                                                "stringr",
-                                                "forcats"),
-                                    selected = ""),
-               
                textInput("otherPackage", "Other (optional):", placeholder = "Enter any CRAN package name"),
                
                actionButton('packageButton', 'use this package')
   
-    ))
+    )),
+  
+    br()
   
 )
 

@@ -65,8 +65,8 @@ get_examples <- function(package, limit = 7, include_comments = FALSE) {
     temp <- str_replace_all(paste0(temp, collapse = ""),
                             "    |  ", "\n")
     
-    # Remove first linebreak
-    temp <- str_remove(temp, fixed("\n"))
+    # Remove first linebreaks
+    temp <- str_remove(temp, "\\n+")
     
     # Replace double linebreaks with single linebreaks
     temp <- str_replace_all(temp, fixed("\n\n"), "\n")

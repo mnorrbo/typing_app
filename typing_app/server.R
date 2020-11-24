@@ -2,15 +2,15 @@ source("global.R")
 
 server <- function(input, output, session){
     
-    packages <- eventReactive(list(input$packageSelect1, input$packageSelect2, input$packageButton), {
+    packages <- eventReactive(list(input$packageSelect, input$packageButton), {
         if (input$otherPackage != "") {
-            c(input$packageSelect1, input$packageSelect2, input$otherPackage)
+            c(input$packageSelect, input$otherPackage)
         } else {
-            c(input$packageSelect1, input$packageSelect2)
+            input$packageSelect
         }
     })
     
-    code_chunks <- eventReactive(list(input$packageSelect1, input$packageSelect2, input$packageButton), {
+    code_chunks <- eventReactive(list(input$packageSelect, input$packageButton), {
         tryCatch(
             unlist(purrr::map(packages(), get_examples))
         )
@@ -50,6 +50,10 @@ server <- function(input, output, session){
                            user_split = user_split(),
                            example_code = code_chunks()[code_place],
                            example_split = code_split())
+    })
+    
+    output$stateMessage <- renderText({
+        "You are in free-typing mode, press the button below to start recording your performance."
     })
     
     observeEvent(input$toggleSidebar, {
