@@ -62,11 +62,11 @@ ui <- fluidPage(
                
                checkboxGroupButtons('packageSelect',
                                     "Packages:",
-                                    choices = c("ggplot2",
-                                                "dplyr",
-                                                "tidyr",
-                                                "readr"),
-                                    selected = c("ggplot2", "dplyr")
+                                    choices = c("jsonlite",
+                                                "ggplot2",
+                                                "vctrs",
+                                                "rlang"),
+                                    selected = c("rlang")
                ),
                
                textInput("otherPackage", "Other (optional):", placeholder = "Enter any CRAN package name"),
