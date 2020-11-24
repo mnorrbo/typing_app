@@ -1,5 +1,5 @@
 ui <- fluidPage(
-
+    useShinyjs(),
     align = "center",
 
     setBackgroundColor(
@@ -11,13 +11,21 @@ ui <- fluidPage(
     titlePanel(
         tags$h1("Typing accuracy test")
     ),
-
+    
     br(),
 
     htmlOutput(
         "example_code",
         container = pre
     ),
+    
+    # htmlOutput("results"),
+    
+  #   tags$script('
+  #   $(document).on("shiny:idle", function (e) {
+  #      Shiny.onInputChange("mydata", Math.random());
+  #   });
+  # '),
 
     br(),
 
@@ -26,7 +34,49 @@ ui <- fluidPage(
         "Type the code above",
         value = "",
         placeholder = "Start typing here"),
+  
+    # textOutput('stateMessage'),
+    # actionButton('timerButton', "Start Challenge!"),
 
-    img(src="hand_mascot.gif")
+    img(src="hand_mascot.gif"),
+  
+    br(),
+  
+    br(),
+  
+    actionButton("toggleSidebar", "Options"),
+    
+    br(), 
+  
+    br(),
+  
+    hidden(div(id ="options",
+               style = "background-color: #b0d6d4;
+                        border-color: #99c4c1;,
+                        border-style: solid;
+                        border-radius: 20px;
+                        width: 500px;
+                        padding: 20px;
+                        margin-left: auto;
+                        margin-right: auto;",
+               
+               checkboxGroupButtons('packageSelect',
+                                    "Packages:",
+                                    choices = c("ggplot2",
+                                                "dplyr",
+                                                "tidyr",
+                                                "readr"),
+                                    selected = c("ggplot2", "dplyr")
+               ),
+               
+               textInput("otherPackage", "Other (optional):", placeholder = "Enter any CRAN package name"),
+               
+               actionButton('packageButton', 'use this package')
+  
+    )),
+  
+    br()
+  
+)
 
-    )
+
