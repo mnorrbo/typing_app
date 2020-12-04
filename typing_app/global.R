@@ -2,9 +2,8 @@ library(shiny)
 library(shinyjs)
 library(tidyverse)
 library(shinyWidgets)
-library(OpenRepGrid) # for english examples
+# library(OpenRepGrid) # for english examples
 library(pdftools)
-
 
 # Function to extract examples
 get_examples <- function(package, limit = 7, include_comments = FALSE) {
@@ -152,8 +151,8 @@ returnColouredText <- function(user_input, user_split,
       
       # paste only typed letters
       paste0('<div style = "text-align: left"', 
-             letters_typed, 
-             '</div>', collapse = "")
+           letters_typed, 
+           '</div>', collapse = "")
       
     }
     
