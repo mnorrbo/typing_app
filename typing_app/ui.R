@@ -37,6 +37,8 @@ ui <- fluidPage(
   
     # textOutput('stateMessage'),
     # actionButton('timerButton', "Start Challenge!"),
+  
+    textOutput("mistakes_indicator"),
 
     img(src="hand_mascot.gif"),
   
