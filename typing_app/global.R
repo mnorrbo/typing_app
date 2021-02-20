@@ -103,9 +103,9 @@ returnColouredText <- function(user_input, user_split,
   
   if (user_input == "") {
     # If the user has not typed anything, then display example code as plain text
-    # and give 100% accuracy
+    # and give no accuracy rating
     
-    mistakes <<- 1
+    mistakes <<- ""
     
     
     paste0('<div style = "text-align: left;">', 
@@ -152,7 +152,7 @@ returnColouredText <- function(user_input, user_split,
       )
       
       # paste typed letters with highlighting followed by untyped letters
-      paste0('<div style = "text-align: left">', 
+      paste0('<div style = "text-align: left; width: auto;">', 
              letters_typed, letters_untyped, 
              '</div>', collapse = "")
       

@@ -55,7 +55,12 @@ server <- function(input, output, session){
     })
     
     output$mistakes_indicator <- eventReactive(input$user_typing, {
-            paste("Accuracy:", mistakes)
+        if (is.character(mistakes)) {
+            
+        } else {
+            paste("Accuracy:", scales::percent(mistakes))
+        }
+            
     })
     
     output$stateMessage <- renderText({
