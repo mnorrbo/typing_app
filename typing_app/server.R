@@ -45,11 +45,22 @@ server <- function(input, output, session){
         }
     })
     
+    # When user makes an input, colour the code to indicate accuracy
+    # also count mistakes, for use when code chunk is completed
     output$example_code <- renderText({
         returnColouredText(user_input = input$user_typing,
                            user_split = user_split(),
                            example_code = code_chunks()[code_place],
                            example_split = code_split())
+    })
+    
+    output$mistakes_indicator <- eventReactive(input$user_typing, {
+        if (is.character(mistakes)) {
+            
+        } else {
+            paste("Accuracy:", scales::percent(mistakes))
+        }
+            
     })
     
     output$stateMessage <- renderText({

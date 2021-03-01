@@ -98,9 +98,16 @@ code_place <- sample(1:100, 1)
 returnColouredText <- function(user_input, user_split, 
                                example_code, example_split, 
                                colours = c(red = "#edb6af", green = "#afedbd")) {
-
+  
+  mistakes <<- 0
+  
   if (user_input == "") {
     # If the user has not typed anything, then display example code as plain text
+    # and give no accuracy rating
+    
+    mistakes <<- ""
+    
+    
     paste0('<div style = "text-align: left;">', 
            example_code,
            '</div>')
@@ -111,7 +118,10 @@ returnColouredText <- function(user_input, user_split,
     # See if the letters are correct
     true_false <- example_split[1:length(user_split)] == user_split
     
-    # create vector to contain highlight colours to show correctness
+    # Calculate accuracy
+    mistakes <<- 1 - (length(true_false) - sum(true_false))/length(user_split)
+    
+    # create vector to contain colours to show correctness
     colours_for_spans <- vector()
     
     # Fill that vector with either red or green:
@@ -142,7 +152,7 @@ returnColouredText <- function(user_input, user_split,
       )
       
       # paste typed letters with highlighting followed by untyped letters
-      paste0('<div style = "text-align: left">', 
+      paste0('<div style = "text-align: left; width: auto;">', 
              letters_typed, letters_untyped, 
              '</div>', collapse = "")
       
