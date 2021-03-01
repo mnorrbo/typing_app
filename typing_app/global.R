@@ -8,21 +8,27 @@ library(pdftools)
 # Function to extract examples
 get_examples <- function(package, limit = 7, include_comments = FALSE) {
   
+  # download CRAN documentation, and parsing to text
   ggplot2_text <- pdf_text(pdf = paste0("https://cran.r-project.org/web/packages/", 
                                         package, "/", 
                                         package, ".pdf"))
   
+  # split pdf text into lines
   ggplot2_lines <- read_lines(ggplot2_text)
   
+  # find location of examples in documentation
   eg_locations <- str_detect(ggplot2_lines, "Examples")
   eg_indexes <- which(eg_locations)
   
+  # find location of descriptions in documentation
+  # (descriptions come after examples in CRAN docs)
   desc_locations <- str_detect(ggplot2_lines, "Description")
   desc_indexes <- which(desc_locations)
   
-  # Finding indexes of 'Description' that follow 'Example'
+  # Find indexes of 'Description' that follow 'Example'
+  # (not every example is followed by a description)
   desc_indexes_cor <- vector(length = length(eg_indexes))
-  
+
   for (i in 1:length(eg_indexes)) {
     
     temp <- desc_indexes[desc_indexes > eg_indexes[i]]
@@ -56,24 +62,24 @@ get_examples <- function(package, limit = 7, include_comments = FALSE) {
     temp_keep <- str_detect(temp, "[A-z][(]|^[)]|^[}]")
     
     # Keep lines that do not contain 'Examples' or 'Description'
-    # and DO contain brackets
+    # and DO contain brackets (brackets indicate code)
     temp <- temp[!temp_remove & temp_keep]
     
     # Turn vector into single character
-    # and add linebreaks instead of three/four spaces
+    # and add line breaks instead of three/four white-spaces
     temp <- str_replace_all(paste0(temp, collapse = ""),
                             "    |  ", "\n")
     
-    # Remove first linebreaks
+    # Remove first line breaks
     temp <- str_remove(temp, "\\n+")
     
-    # Replace double linebreaks with single linebreaks
+    # Replace double line breaks with single line breaks
     temp <- str_replace_all(temp, fixed("\n\n"), "\n")
     
-    # Remove whitespace after \n
+    # Remove white space after '\n'
     temp <- str_replace_all(temp, "\\n[ ]+", "\n")
     
-    # Remove whitespace at start of examples
+    # Remove white space at start of examples
     temp <- str_remove_all(temp, pattern = "^ +")
     
     # Save example into vector
