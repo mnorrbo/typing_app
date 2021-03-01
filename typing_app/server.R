@@ -2,6 +2,7 @@ source("global.R")
 
 server <- function(input, output, session){
     
+    # Find which packages to use for examples
     packages <- eventReactive(list(input$packageSelect, input$packageButton), {
         if (input$otherPackage != "") {
             c(input$packageSelect, input$otherPackage)
@@ -10,7 +11,8 @@ server <- function(input, output, session){
         }
     })
     
-    code_chunks <- eventReactive(list(input$packageSelect, input$packageButton), {
+    # Extract examples from package documentation
+    code_chunks <- reactive({
         tryCatch(
             unlist(purrr::map(packages(), get_examples))
         )
