@@ -2,10 +2,12 @@ library(shiny)
 library(shinyjs)
 library(tidyverse)
 library(shinyWidgets)
-# library(OpenRepGrid) # for english examples
+# library(OpenRepGrid) # for English examples
 library(pdftools)
 
-# Function to extract examples
+
+# CRAN code examples ---------------------------------------------------
+
 get_examples <- function(package, limit = 7, include_comments = FALSE) {
   
   ggplot2_text <- pdf_text(pdf = paste0("https://cran.r-project.org/web/packages/", 
@@ -30,6 +32,7 @@ get_examples <- function(package, limit = 7, include_comments = FALSE) {
     desc_indexes_cor[i] <- temp[1]
     
   }
+  
   
   examples <- vector(length = length(eg_indexes))
   
@@ -85,7 +88,13 @@ get_examples <- function(package, limit = 7, include_comments = FALSE) {
   
 }
 
-# Default code chunks
+
+
+
+
+
+# Create code chunks ------------------------------------------------------
+
 
 code_chunks <- function() {
   return(unlist(purrr:map(c("ggplot2", "dplyr"), get_examples)))
@@ -94,7 +103,10 @@ code_chunks <- function() {
 # Default selection
 code_place <- sample(1:100, 1)
 
-# Function
+
+# Accuracy function -------------------------------------------------------
+
+
 returnColouredText <- function(user_input, user_split, 
                                example_code, example_split, 
                                colours = c(red = "#edb6af", green = "#afedbd")) {
