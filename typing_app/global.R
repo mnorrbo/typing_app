@@ -92,7 +92,6 @@ get_examples <- function(package, limit = 7, include_comments = FALSE) {
 }
 
 # Default code chunks
-
 code_chunks <- function() {
   return(unlist(purrr:map(c("ggplot2", "dplyr"), get_examples)))
 }
@@ -100,19 +99,29 @@ code_chunks <- function() {
 # Default selection
 code_place <- sample(1:100, 1)
 
-# Function
-returnColouredText <- function(user_input, user_split, 
-                               example_code, example_split, 
-                               colours = c(red = "#edb6af", green = "#afedbd")) {
-  
-  mistakes <<- 0
+# Mistake functions
+find_mistakes <- function(user_input, user_split, 
+                           example_code, example_split) {
   
   if (user_input == "") {
-    # If the user has not typed anything, then display example code as plain text
-    # and give no accuracy rating
-    
-    mistakes <<- ""
-    
+    return(TRUE)
+  } else {
+    return(example_split[1:length(user_split)] == user_split)
+  }
+  
+  
+}
+
+old_mistakes <- NULL
+mistakes <- 0
+
+mistake_feedback <- function(true_false, example_code, 
+                             example_split, user_split, user_input,
+                             colours = c(red = "#edb6af", green = "#afedbd")) {
+  
+  if (user_input == "") {
+    # If the user has not yet typed anything 
+    # then display example code as plain text
     
     paste0('<div style = "text-align: left;">', 
            example_code,
@@ -120,12 +129,6 @@ returnColouredText <- function(user_input, user_split,
     
   } else { 
     # if the user has typed something
-    
-    # See if the letters are correct
-    true_false <- example_split[1:length(user_split)] == user_split
-    
-    # Calculate accuracy
-    mistakes <<- 1 - (length(true_false) - sum(true_false))/length(user_split)
     
     # create vector to contain colours to show correctness
     colours_for_spans <- vector()

@@ -1,6 +1,6 @@
 source("global.R")
 
-server <- function(input, output, session){
+server <- function(input, output, session) {
     
     # Find which packages to use for examples
     packages <- eventReactive(list(input$packageSelect, input$packageButton), {
@@ -43,26 +43,60 @@ server <- function(input, output, session){
                 "Type the code above",
                 value = "",
                 placeholder = "Start typing here")
+            
 
         }
     })
     
+    current_mistakes <- reactive(
+        find_mistakes(user_input = input$user_typing,
+                      user_split = user_split(),
+                      example_code = code_chunks()[code_place],
+                      example_split = code_split())
+    )
+    
+    observeEvent(input$user_typing,
+                 {
+                     
+                     if (!is.null(old_mistakes)) {
+                         
+                         if (length(current_mistakes()) > length(old_mistakes)) {
+                             # new 'mistakes' are the current mistakes, ignoring the old mistakes
+                             new_mistakes <<- current_mistakes()[(length(old_mistakes)+1):length(current_mistakes())]
+                         } else {
+                             # if current mistakes is not longer than old
+                             # then there are no new mistakes
+                             new_mistakes <- NA
+                         }
+                         
+                         
+                     } else {
+                         
+                         # if there are no old mistakes
+                         # then there are no new mistakes
+                         new_mistakes <- NA
+                     }
+                     
+                     
+                     # Current mistakes are the old mistakes next time this runs
+                     old_mistakes <<- current_mistakes()
+                     
+                     # mistake count increases by number of mistakes in new input
+                     mistakes <<- mistakes + sum(!new_mistakes, na.rm = TRUE)
+                     
+                     # display mistake count
+                     output$mistakes_indicator <- renderText(paste("Mistakes:", mistakes))
+                     
+                 })
+    
     # When user makes an input, colour the code to indicate accuracy
     # also count mistakes, for use when code chunk is completed
     output$example_code <- renderText({
-        returnColouredText(user_input = input$user_typing,
-                           user_split = user_split(),
-                           example_code = code_chunks()[code_place],
-                           example_split = code_split())
-    })
-    
-    output$mistakes_indicator <- eventReactive(input$user_typing, {
-        if (is.character(mistakes)) {
-            
-        } else {
-            paste("Accuracy:", scales::percent(mistakes))
-        }
-            
+        mistake_feedback(true_false = current_mistakes(),
+                         user_split = user_split(),
+                         user_input = input$user_typing,
+                         example_code = code_chunks()[code_place],
+                         example_split = code_split())
     })
     
     output$stateMessage <- renderText({
