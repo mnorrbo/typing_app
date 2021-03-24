@@ -39,6 +39,8 @@ ui <- fluidPage(
     # actionButton('timerButton', "Start Challenge!"),
   
     textOutput("mistakes_indicator"),
+  
+    textOutput("debugger"),
 
     img(src="hand_mascot.gif"),
   
