@@ -40,6 +40,8 @@ ui <- fluidPage(
   
     textOutput("mistakes_indicator"),
   
+    textOutput("speed_feedback"),
+  
     textOutput("debugger"),
 
     img(src="hand_mascot.gif"),

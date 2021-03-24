@@ -201,3 +201,20 @@ mistake_feedback <- function(true_false, example_code,
   }
 
 }
+
+# Speed defaults
+
+t_1 <- Sys.time()
+
+speed <- 0
+
+# speed function
+
+calc_speed <- function(t_1_, t_2, N_char) {
+  
+  diff <- difftime(t_2, t_1_, units = "secs") %>% as.numeric()
+  
+  speed <<- N_char/diff
+  
+  t_1 <<- t_2
+}
