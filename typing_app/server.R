@@ -58,34 +58,14 @@ server <- function(input, output, session) {
     observeEvent(input$user_typing,
                  {
                      
-                     if (!is.null(old_mistakes)) {
-                         
-                         if (length(current_mistakes()) > length(old_mistakes)) {
-                             # new 'mistakes' are the current mistakes, ignoring the old mistakes
-                             new_mistakes <<- current_mistakes()[(length(old_mistakes)+1):length(current_mistakes())]
-                         } else {
-                             # if current mistakes is not longer than old
-                             # then there are no new mistakes
-                             new_mistakes <- NA
-                         }
-                         
-                         
-                     } else {
-                         
-                         # if there are no old mistakes
-                         # then there are no new mistakes
-                         new_mistakes <- NA
-                     }
-                     
-                     
-                     # Current mistakes are the old mistakes next time this runs
-                     old_mistakes <<- current_mistakes()
-                     
-                     # mistake count increases by number of mistakes in new input
-                     mistakes <<- mistakes + sum(!new_mistakes, na.rm = TRUE)
-                     
+                     # count new mistakes 
+                     # based on current mistakes and previous mistakes
+                     update_mistakes(current_mistakes(), old_mistakes)
+
                      # display mistake count
-                     output$mistakes_indicator <- renderText(paste("Mistakes:", mistakes))
+                     output$mistakes_indicator <- renderText(paste(
+                         "Mistakes:", mistakes
+                         ))
                      
                  })
     

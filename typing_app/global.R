@@ -115,6 +115,26 @@ find_mistakes <- function(user_input, user_split,
 old_mistakes <- NULL
 mistakes <- 0
 
+update_mistakes <- function(current, old) {
+  if (length(current) >= length(old)) {
+    # new 'mistakes' are the current mistakes, ignoring the old mistakes
+    new_mistakes <<- current[(length(old)+1):length(current)]
+  } else {
+    # if current mistakes is not longer than old
+    # then there are no new mistakes
+    new_mistakes <- NA
+  }
+  
+  
+  # Current mistakes are the old mistakes next time this runs
+  old_mistakes <<- current
+  
+  # mistake count increases by number of mistakes in new input
+  mistakes <<- mistakes + sum(!new_mistakes, na.rm = TRUE)
+  
+  # return(mistakes)
+}
+
 mistake_feedback <- function(true_false, example_code, 
                              example_split, user_split, user_input,
                              colours = c(red = "#edb6af", green = "#afedbd")) {
