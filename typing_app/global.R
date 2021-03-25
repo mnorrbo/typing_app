@@ -125,7 +125,7 @@ update_mistakes <- function(current, old) {
   } else {
     # if current mistakes is not longer than old
     # then there are no new mistakes
-    new_mistakes <- NA
+    new_mistakes <<- NA
   }
 
 
@@ -170,17 +170,18 @@ mistake_feedback <- function(true_false, example_code,
     letters_typed <- paste0(
       '<span style = \"background-color:',
       colours_for_spans, '\">',
-      example_split[1:length(user_split)],
+      example_split[1:length(user_split)] %>% na.omit(),
       '</span>',
       collapse = ""
-    )
+    ) 
 
-    if ((length(user_split)+1) <= length(example_split)) {
+    if (length(user_split) <= length(example_split)) {
       # If all user has typed fewer letters than the example contains
 
       # find all untyped letters and paste them as plain text (no highlighting)
       letters_untyped <- paste0(
-        example_split[(length(user_split)+1):length(example_split)], collapse = ""
+        example_split[(length(user_split)+1):length(example_split)] %>% na.omit(), 
+        collapse = ""
       )
 
       # paste typed letters with highlighting followed by untyped letters
@@ -190,10 +191,18 @@ mistake_feedback <- function(true_false, example_code,
 
     } else {
       # if user has typed enough letters (including whitespace)
-
+      
+      letters_example <- paste0(
+        '<span style = \"background-color:',
+        colours_for_spans, '\">',
+        example_split,
+        '</span>',
+        collapse = ""
+      ) 
+      
       # paste only typed letters
       paste0('<div style = "text-align: left"',
-           letters_typed,
+            letters_example,
            '</div>', collapse = "")
 
     }
