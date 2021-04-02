@@ -109,7 +109,8 @@ find_mistakes <- function(user_input, user_split,
   if (user_input == "") {
     return(TRUE)
   } else {
-    return(example_split[1:length(user_split)] == user_split)
+    true_false <- example_split[1:length(user_split)] == user_split
+    return(true_false %>% na.omit())
   }
 
 
@@ -125,7 +126,7 @@ update_mistakes <- function(current, old) {
   } else {
     # if current mistakes is not longer than old
     # then there are no new mistakes
-    new_mistakes <- NA
+    new_mistakes <<- NA
   }
 
 
@@ -162,42 +163,51 @@ mistake_feedback <- function(true_false, example_code,
     # so +1 to true_false vector
     # correct = 2, incorrect = 1
     # colours[2] = green, colours[1] = red
-    for (i in 1:length(user_split)) {
+    for (i in 1:length(example_split)) {
       colours_for_spans[i] <- colours[as.numeric(true_false[i])+1]
     }
+    
+    colours_for_spans <- colours_for_spans %>% na.omit()
 
     # Creating HTML to display letters with highlighting (background-color:)
     letters_typed <- paste0(
       '<span style = \"background-color:',
       colours_for_spans, '\">',
-      example_split[1:length(user_split)],
+      example_split[1:length(user_split)] %>% na.omit(),
       '</span>',
       collapse = ""
+    ) 
+
+    letters_untyped <- if_else((length(user_split)+1) <= length(example_split),
+      paste0(
+        example_split[(length(user_split)+1):length(example_split)] %>% na.omit(), 
+        collapse = ""
+      ),
+      ""
     )
-
-    if ((length(user_split)+1) <= length(example_split)) {
-      # If all user has typed fewer letters than the example contains
-
-      # find all untyped letters and paste them as plain text (no highlighting)
-      letters_untyped <- paste0(
-        example_split[(length(user_split)+1):length(example_split)], collapse = ""
-      )
-
-      # paste typed letters with highlighting followed by untyped letters
-      paste0('<div style = "text-align: left; width: auto;">',
-             letters_typed, letters_untyped,
-             '</div>', collapse = "")
-
-    } else {
-      # if user has typed enough letters (including whitespace)
-
-      # paste only typed letters
-      paste0('<div style = "text-align: left"',
-           letters_typed,
+    
+    # paste typed letters with highlighting followed by untyped letters
+    paste0('<div style = "text-align: left; width: auto;">',
+           letters_typed, letters_untyped,
            '</div>', collapse = "")
-
-    }
 
   }
 
+}
+
+# Speed defaults
+
+t_1 <- Sys.time()
+
+speed <- 0
+
+# speed function
+
+calc_speed <- function(t_1_, t_2, N_char) {
+  
+  diff <- difftime(t_2, t_1_, units = "secs") %>% as.numeric()
+  
+  speed <<- N_char/diff
+  
+  t_1 <<- t_2
 }

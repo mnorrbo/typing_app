@@ -30,24 +30,6 @@ server <- function(input, output, session) {
         str_split(code_chunks()[code_place], "") %>% flatten_chr()
     })
     
-    # When user has typed something the same length as the example
-    # change example and reset input
-    observe({
-        if (length(user_split()) >= length(code_split())) {
-
-            code_place <<- sample(1:length(code_chunks()), 1)
-
-            updateTextAreaInput(
-                session,
-                "user_typing",
-                "Type the code above",
-                value = "",
-                placeholder = "Start typing here")
-            
-
-        }
-    })
-    
     current_mistakes <- reactive(
         find_mistakes(user_input = input$user_typing,
                       user_split = user_split(),
@@ -57,27 +39,60 @@ server <- function(input, output, session) {
     
     observeEvent(input$user_typing,
                  {
+                     # When user makes an input, colour the code to indicate accuracy
+                     output$example_code <- renderText({
+                         mistake_feedback(true_false = current_mistakes(),
+                                          user_split = user_split(),
+                                          user_input = input$user_typing,
+                                          example_code = code_chunks()[code_place],
+                                          example_split = code_split())
+                     })
                      
-                     # count new mistakes 
-                     # based on current mistakes and previous mistakes
-                     update_mistakes(current_mistakes(), old_mistakes)
-
-                     # display mistake count
-                     output$mistakes_indicator <- renderText(paste(
-                         "Mistakes:", mistakes
+                     # control code based on completion of typing
+                     if (length(user_split()) < length(code_split()) | 
+                         sum(!current_mistakes(), na.rm = TRUE) > 0) {
+                         # count new mistakes 
+                         # based on current mistakes and previous mistakes
+                         update_mistakes(current_mistakes(), old_mistakes)
+                         
+                         # display mistake count
+                         output$mistakes_indicator <- renderText(paste(
+                             "Mistakes:", mistakes
                          ))
+                         
+                     } else {
+                         
+                         # calculate typing speed
+                         calc_speed(t_1, Sys.time(), length(user_split()))
+                         
+                         # save speed and mistakes
+                        
+                         # clear user input
+                         updateTextAreaInput(
+                             session,
+                             "user_typing",
+                             "Type the code above",
+                             value = "",
+                             placeholder = "Start typing here")
+                         
+                         # choose new example
+                         code_place <<- sample(1:length(code_chunks()), 1)
+                         
+                         # reset mistake count
+                         mistakes <<- 0
+                         
+                         
+                     }
+                     
+                     # display speed feedback
+                     output$speed_feedback <- renderText({
+                         paste("Speed:", round(speed, 3), "characters per second")
+                     })
+                     
                      
                  })
     
-    # When user makes an input, colour the code to indicate accuracy
-    # also count mistakes, for use when code chunk is completed
-    output$example_code <- renderText({
-        mistake_feedback(true_false = current_mistakes(),
-                         user_split = user_split(),
-                         user_input = input$user_typing,
-                         example_code = code_chunks()[code_place],
-                         example_split = code_split())
-    })
+    
     
     output$stateMessage <- renderText({
         "You are in free-typing mode, press the button below to start recording your performance."
