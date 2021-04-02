@@ -39,6 +39,15 @@ server <- function(input, output, session) {
     
     observeEvent(input$user_typing,
                  {
+                     # When user makes an input, colour the code to indicate accuracy
+                     output$example_code <- renderText({
+                         mistake_feedback(true_false = current_mistakes(),
+                                          user_split = user_split(),
+                                          user_input = input$user_typing,
+                                          example_code = code_chunks()[code_place],
+                                          example_split = code_split())
+                     })
+                     
                      # control code based on completion of typing
                      if (length(user_split()) < length(code_split()) | 
                          sum(!current_mistakes(), na.rm = TRUE) > 0) {
@@ -50,15 +59,6 @@ server <- function(input, output, session) {
                          output$mistakes_indicator <- renderText(paste(
                              "Mistakes:", mistakes
                          ))
-                         
-                         # When user makes an input, colour the code to indicate accuracy
-                         output$example_code <- renderText({
-                             mistake_feedback(true_false = current_mistakes(),
-                                              user_split = user_split(),
-                                              user_input = input$user_typing,
-                                              example_code = code_chunks()[code_place],
-                                              example_split = code_split())
-                         })
                          
                      } else {
                          
