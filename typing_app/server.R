@@ -78,9 +78,21 @@ server <- function(input, output, session) {
                          # choose new example
                          code_place <<- sample(1:length(code_chunks()), 1)
                          
+                         # update feedback table
+                         if (nrow(scores) > 0) {
+                             scores <<- scores %>% 
+                                 add_row(Speed = speed, Accuracy = mistakes,
+                                         .before = 1)
+                         } else {
+                             scores <<- data.frame(Speed = speed, Accuracy = mistakes)
+                         }
+                         
+                         output$feedback <- renderTable(
+                             scores
+                         )
+                         
                          # reset mistake count
                          mistakes <<- 0
-                         
                          
                      }
                      
@@ -102,4 +114,5 @@ server <- function(input, output, session) {
         shinyjs::toggle(id = "options",
                         anim = TRUE)
     })
+
 }

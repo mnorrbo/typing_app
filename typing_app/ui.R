@@ -38,9 +38,11 @@ ui <- fluidPage(
     # textOutput('stateMessage'),
     # actionButton('timerButton', "Start Challenge!"),
   
-    textOutput("mistakes_indicator"),
+    # textOutput("mistakes_indicator"),
+    # 
+    # textOutput("speed_feedback"),
   
-    textOutput("speed_feedback"),
+    tableOutput("feedback"),
   
     textOutput("debugger"),
 

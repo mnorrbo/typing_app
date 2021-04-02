@@ -211,3 +211,8 @@ calc_speed <- function(t_1_, t_2, N_char) {
   
   t_1 <<- t_2
 }
+
+scores <- data.frame(
+  Speed = c(),
+  Accuracy = c()
+)
