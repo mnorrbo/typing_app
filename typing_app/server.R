@@ -81,10 +81,18 @@ server <- function(input, output, session) {
                          # update feedback table
                          if (nrow(scores) > 0) {
                              scores <<- scores %>% 
-                                 add_row(Speed = speed, Accuracy = mistakes,
+                                 add_row(Speed = (speed*60)/4.79, 
+                                         Accuracy = scales::percent(
+                                             (1 - mistakes/length(code_split())),
+                                             accuracy = 2
+                                             ),
                                          .before = 1)
                          } else {
-                             scores <<- data.frame(Speed = speed, Accuracy = mistakes)
+                             scores <<- data.frame(Speed = (speed*60)/4.79, 
+                                                   Accuracy = scales::percent(
+                                                       (1 - mistakes/length(code_split())),
+                                                       accuracy = 2
+                                                   ))
                          }
                          
                          output$feedback <- renderTable(
