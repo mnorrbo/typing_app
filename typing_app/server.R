@@ -79,7 +79,7 @@ server <- function(input, output, session) {
                          code_place <<- sample(1:length(code_chunks()), 1)
                          
                          # update feedback table
-                         if (nrow(scores) > 0) {
+                         if (nrow(scores) > 0 & nrow(scores) < 5) {
                              scores <<- scores %>% 
                                  add_row(Speed = (speed*60)/4.79, 
                                          Accuracy = scales::percent(
