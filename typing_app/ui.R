@@ -28,12 +28,16 @@ ui <- fluidPage(
   # '),
 
     br(),
+  
+    uiOutput("start_button"),
+  
+    uiOutput("user_typing"),
 
-    textAreaInput(
-        "user_typing",
-        "Type the code above",
-        value = "",
-        placeholder = "Start typing here"),
+    # textAreaInput(
+    #     "user_typing",
+    #     "Type the code above",
+    #     value = "",
+    #     placeholder = "Start typing here"),
   
     # textOutput('stateMessage'),
     # actionButton('timerButton', "Start Challenge!"),

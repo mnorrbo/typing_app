@@ -5,6 +5,7 @@ library(shinyWidgets)
 # library(OpenRepGrid) # for English examples
 library(pdftools)
 
+state = "before"
 
 # CRAN code examples ---------------------------------------------------
 

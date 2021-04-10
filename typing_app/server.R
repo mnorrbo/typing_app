@@ -2,8 +2,51 @@ source("global.R")
 
 server <- function(input, output, session) {
     
+    # CONTROL UI BASED ON STATE
+    #######
+    
+    # default message
+    output$example_code <- renderText({
+        "<p>Welcome to the <code>R</code> typing test.</p><p>Press the 'Start' button to begin.</p><p>The timer will start immediately!</p>"
+    })
+    
+    # remove/insert button and text input depending on state
+    observeEvent(input$start_button, {
+        output$start_button <- renderUI(
+            {
+                switch(
+                    state,
+                    "before" = {actionButton("start_button", "Start")},
+                    "during" = {},
+                    "after" = {actionButton("start_button", "Start")}
+                )
+            }
+        )
+        
+        output$user_typing <- renderUI(
+            {
+                switch(
+                    state,
+                    "before" = {},
+                    "during" = textAreaInput(
+                        "user_typing",
+                        "Type the code above",
+                        value = "",
+                        placeholder = "Start typing here"),
+                    "after" = {}
+                )
+            }
+        )
+    },
+    ignoreNULL = FALSE)
+    
+    
+    
+    # HANDLE EXAMPLE CODE AND USER INPUT CODE
+    #######
+    
     # Find which packages to use for examples
-    packages <- eventReactive(list(input$packageSelect, input$packageButton), {
+    packages <- eventReactive(list(input$packageButton), {
         if (input$otherPackage != "") {
             c(input$packageSelect, input$otherPackage)
         } else {
@@ -37,16 +80,29 @@ server <- function(input, output, session) {
                       example_split = code_split())
     )
     
+    observeEvent(input$start_button, {
+        # change state and handle timing
+        switch(state,
+               "before" = {state <<- "during"
+                           t_1 <<- Sys.time()},
+               "during" = {},
+               "after" = {state <<- "during"}
+               )
+    })
+    
     observeEvent(input$user_typing,
                  {
                      # When user makes an input, colour the code to indicate accuracy
-                     output$example_code <- renderText({
-                         mistake_feedback(true_false = current_mistakes(),
-                                          user_split = user_split(),
-                                          user_input = input$user_typing,
-                                          example_code = code_chunks()[code_place],
-                                          example_split = code_split())
-                     })
+                    
+                    output$example_code <- renderText({
+                       mistake_feedback(true_false = current_mistakes(),
+                                        user_split = user_split(),
+                                        user_input = input$user_typing,
+                                        example_code = code_chunks()[code_place],
+                                        example_split = code_split())
+                    })
+                           
+                     
                      
                      # control code based on completion of typing
                      if (length(user_split()) < length(code_split()) | 
@@ -93,6 +149,9 @@ server <- function(input, output, session) {
                                                        (1 - mistakes/length(code_split())),
                                                        accuracy = 2
                                                    ))
+                             state <<- "after"
+                             output$start_button <- renderUI(actionButton("start_button", "Start"))
+                             output$user_typing <- renderUI({})
                          }
                          
                          output$feedback <- renderTable(
